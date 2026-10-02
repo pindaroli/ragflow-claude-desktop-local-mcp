@@ -43,12 +43,14 @@ logger = logging.getLogger("ragflow-mcp")
 
 class RAGFlowMCPServer:
     def __init__(self, base_url: str, api_key: str, default_rerank: Optional[str] = None,
-                 cf_access_client_id: Optional[str] = None, cf_access_client_secret: Optional[str] = None):
+                 cf_access_client_id: Optional[str] = None, cf_access_client_secret: Optional[str] = None,
+                 ssl_verify: bool = True):
         self.base_url = base_url.rstrip('/')
         self.api_key = api_key
         self.default_rerank = default_rerank
         self.cf_access_client_id = cf_access_client_id
         self.cf_access_client_secret = cf_access_client_secret
+        self.ssl_verify = ssl_verify
 
         self.headers = {
             'Authorization': f'Bearer {api_key}',
@@ -75,7 +77,11 @@ class RAGFlowMCPServer:
         """Lazy-create the HTTP session and reuse it across requests."""
         if self._session is None or self._session.closed:
             timeout = aiohttp.ClientTimeout(total=30, connect=10)
-            connector = aiohttp.TCPConnector(limit=100, limit_per_host=30)
+            connector = aiohttp.TCPConnector(
+                limit=100,
+                limit_per_host=30,
+                ssl=None if self.ssl_verify else False,
+            )
             self._session = aiohttp.ClientSession(
                 timeout=timeout,
                 connector=connector,

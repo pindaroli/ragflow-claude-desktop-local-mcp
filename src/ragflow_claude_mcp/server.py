@@ -85,12 +85,16 @@ def get_ragflow_client() -> RAGFlowMCPServer:
             if len(RAGFLOW_API_KEY.strip()) < 10:
                 raise ConfigurationError("RAGFLOW_API_KEY appears to be invalid (too short)")
 
+            ssl_verify_raw = os.getenv("RAGFLOW_SSL_VERIFY", str(config.get("RAGFLOW_SSL_VERIFY", "true")))
+            ssl_verify = ssl_verify_raw.lower() in ("true", "1", "yes")
+
             _ragflow_client = RAGFlowMCPServer(
                 RAGFLOW_BASE_URL,
                 RAGFLOW_API_KEY,
                 RAGFLOW_DEFAULT_RERANK,
                 CF_ACCESS_CLIENT_ID,
                 CF_ACCESS_CLIENT_SECRET,
+                ssl_verify=ssl_verify,
             )
             logger.info("RAGFlow client initialized successfully")
 
