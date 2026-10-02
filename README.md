@@ -317,12 +317,15 @@ Tests:
 
 ```bash
 uv run pytest
+uv run pytest -m e2e           # Run only End-to-End tests
+uv run pytest -m "not e2e"     # Run only Unit tests
 uv run pytest --cov=src --cov-report=html --cov-report=term
 uv run pytest tests/test_server.py
+uv run pytest tests/test_e2e.py
 uv run pytest -v
 ```
 
-Coverage is around 44% with 22/23 tests passing (one is skipped because of an intermittent CI flake). Tests cover server init, RAGFlow API integration, DSPy deepening, OpenAI/OpenRouter config branches, and config loading.
+Coverage is around 49% with 35/36 tests passing (one is skipped because of an intermittent CI flake). Tests include unit tests (server init, RAGFlow API integration, DSPy deepening, OpenAI/OpenRouter config branches, and config loading) and black-box E2E tests (MCP protocol handshake, tool discovery, stdio transport, full retrieval flows, Cloudflare Zero Trust headers, and backend error resilience).
 
 ## Implementation notes
 
